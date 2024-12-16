@@ -15,14 +15,18 @@ const userSchema = new mongoose.Schema({
         unique: true
     },
     password: {
-        type: String,
-        required: true
+        type: String
     },
     role: {
         type: String,
         enum: ["user", "doctor", "admin"],
         default: "user"
-    }
+    },
+    specialization: String,
+    qualification: String,
+    experience: Number,
+    fees: String,
+    availableSlots: String
 });
 
 module.exports = mongoose.model('User', userSchema);

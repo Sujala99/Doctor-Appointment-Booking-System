@@ -1,3 +1,6 @@
+
+
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -9,39 +12,37 @@ exports.registerUser = async (req, res) => {
     const { username, phonenumber, email, password, role } = req.body;
 
     try {
-        // Check if user already exists
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email: email.trim() });
+
         if (existingUser) {
-            return res.status(400).json({ message: "User already exists" });
+            if (existingUser.role === 'doctor') {
+                // Send Reset Password Email
+                const token = jwt.sign({ id: existingUser._id }, SECRET_KEY, { expiresIn: "1h" });
+                const resetLink = `http://localhost:3000/reset-password/${token}`;
+
+                await sendEmail(
+                    email,
+                    "Reset Your Password",
+                    `Hello,\n\nIt looks like you are trying to register as a doctor. Since you are already added as a doctor, please use the link below to set your password.\n\nReset Password Link: ${resetLink}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this message.\n\nToken: ${token}`
+                );
+
+                return res.status(400).json({
+                    message: "Doctor already exists. A password reset link has been sent to your email."
+                });
+            }
+            return res.status(400).json({ message: "User with this email already exists." });
         }
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create new user
-        const trimmedEmail = email.trim();
-            const user = new User({
+        const user = new User({
             username,
             phonenumber,
-            email: trimmedEmail,
+            email: email.trim(),
             password: hashedPassword,
             role,
         });
 
-
         await user.save();
-
-        if (role === 'doctor') {
-            const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: "1h" });
-            const resetLink = `http://localhost:3000/reset-password/${token}`;
-
-            await sendEmail(
-                email,
-                "Congratulations! You've been registered as a Doctor",
-                `Hello ${username},\n\nCongratulations on being registered as a Doctor. Please use the following link to set your new password:\n\n${resetLink}\n\nThis link will expire in 1 hour.\n\nThank you!`
-            );
-        }
-
         res.status(201).json({ message: "User registered successfully", role });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -110,6 +111,7 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
+
 const sendEmail = async (to, subject, text) => {
     try {
         console.log(`Sending email to: ${to}`); // Debug log
@@ -134,3 +136,21 @@ const sendEmail = async (to, subject, text) => {
         console.error('Error sending email:', error.message);
     }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
