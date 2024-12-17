@@ -11,16 +11,16 @@ const app = express();
 // [SECTION] Routes
 const userRoutes = require("./routes/user");
 const doctorRoutes = require("./routes/doctor");
-// const blogRoutes = require("./routes/blog");
-// const appointmentRoutes = require("./routes/appointment");
+const blogRoutes = require("./routes/blog");
+const appointmentRoutes = require("./routes/appointment");
 
 
 // Middleware
 app.use(express.json());
 app.use("/users", userRoutes);
 app.use("/doctors", doctorRoutes);
-// app.use("/blogs", blogRoutes);
-// app.use("/appointments", appointmentRoutes);
+app.use("/blogs", blogRoutes);
+app.use("/appointments", appointmentRoutes);
 
 // Connect to MongoDB
 connectDB();
