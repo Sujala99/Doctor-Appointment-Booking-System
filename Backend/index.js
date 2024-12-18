@@ -13,6 +13,7 @@ const userRoutes = require("./routes/user");
 const doctorRoutes = require("./routes/doctor");
 const blogRoutes = require("./routes/blog");
 const appointmentRoutes = require("./routes/appointment");
+const notificationRoutes = require("./routes/notification");
 
 
 // Middleware
@@ -21,6 +22,7 @@ app.use("/users", userRoutes);
 app.use("/doctors", doctorRoutes);
 app.use("/blogs", blogRoutes);
 app.use("/appointments", appointmentRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Connect to MongoDB
 connectDB();
