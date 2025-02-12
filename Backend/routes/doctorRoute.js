@@ -1,5 +1,5 @@
 const express = require("express");
-const doctorController = require("../controller/doctor");
+const doctorController = require("../controller/doctorController");
 const { authenticateToken } = require("../security/Auth");
 
 const router = express.Router();

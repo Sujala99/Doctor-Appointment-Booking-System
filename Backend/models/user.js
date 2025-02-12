@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: true
+        required: true,
+        unique: true
+
     },
     phonenumber: {
         type: String,
@@ -15,12 +17,35 @@ const userSchema = new mongoose.Schema({
         unique: true
     },
     password: {
+        type: String,
+        required: true
+    },
+    fullname: {
+        type: String,
+        required: true
+    },
+    dob: {
+        type: Date
+    },
+    gender: {
+        type: String,
+        enum: ["male", "female", "other"]
+    },
+    address: {
         type: String
     },
+    image: {
+        type: String,
+        default: null,
+  },
     role: {
         type: String,
         enum: ["user", "doctor", "admin"],
         default: "user"
+    },
+    description: {
+        type: String,
+    
     },
     specialization: String,
     qualification: String,
@@ -29,4 +54,4 @@ const userSchema = new mongoose.Schema({
     availableSlots: String
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);

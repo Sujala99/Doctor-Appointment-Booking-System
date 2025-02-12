@@ -29,6 +29,10 @@ const DoctorSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
+	description: {
+		type: String,
+	
+	},
 })
 
 module.exports= mongoose.model("Doctor", DoctorSchema);

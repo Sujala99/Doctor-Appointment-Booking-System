@@ -1,6 +1,6 @@
 const express = require("express");
 const { authenticateToken } = require("../security/Auth");
-const notificationController = require("../controllers/notification");
+const notificationController = require("../controller/notificationController");
 
 const router = express.Router();
 

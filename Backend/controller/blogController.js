@@ -13,6 +13,7 @@ exports.addBlog = async (req, res) => {
         const blog = new Blog({
             title,
             content,
+            image,
             author: req.user.username,
         });
 
@@ -95,5 +96,48 @@ exports.deleteBlog = async (req, res) => {
     } catch (error) {
         console.error("Error deleting blog:", error);
         res.status(500).json({ message: "Server Error: Unable to delete blog", error: error.message });
+    }
+};
+
+
+
+
+exports.uploadImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "Please upload an image" });
+        }
+
+        // Check file size limit
+        const maxSize = process.env.MAX_FILE_UPLOAD || 2 * 1024 * 1024; // Default 2MB
+        if (req.file.size > maxSize) {
+            return res.status(400).json({
+                message: `Please upload an image less than ${maxSize / (1024 * 1024)}MB`,
+            });
+        }
+
+        // Check if blog ID is provided
+        const { blogId } = req.body;
+        if (!blogId) {
+            return res.status(400).json({ message: "Blog ID is required" });
+        }
+
+        // Find the blog by ID and update the image field
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({ message: "Blog not found" });
+        }
+
+        blog.image = req.file.filename; // Save uploaded file name
+        await blog.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Image uploaded successfully",
+            imageUrl: req.file.filename,
+        });
+    } catch (error) {
+        console.error("Error uploading blog image:", error);
+        res.status(500).json({ message: "Server error: Unable to upload image", error: error.message });
     }
 };

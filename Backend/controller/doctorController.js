@@ -1,48 +1,69 @@
 const mongoose = require("mongoose");
-const Doctor = require("../models/Doctor");
+// const Doctor = require("../models/Doctor");
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
+
 
 // 1. Add Doctor (Only Admin)
+
 exports.addDoctor = async (req, res) => {
-    const { name, email, specialization, qualification, experience, fees, availableSlots } = req.body;
+    const { username, email, fullname, password, phonenumber, gender, dob, specialization, qualification, experience, fees, availableSlots, description } = req.body;
 
     try {
-        // Check if the user role is admin
+        // Ensure only admins can add doctors
         if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Access Denied: Only admins can add doctors." });
         }
 
-        // Check if the doctor already exists in User collection
+        // Check if the doctor already exists
         const existingDoctor = await User.findOne({ email });
         if (existingDoctor) {
-            // Update the user's role to "doctor" and add doctor-specific fields
-            existingDoctor.role = 'doctor';
-            existingDoctor.username = name;
+            if (existingDoctor.role === "doctor") {
+                return res.status(400).json({ message: "Doctor already exists." });
+            }
+
+            // Update the user role to "doctor" and add doctor-specific fields
+            existingDoctor.role = "doctor";
+            existingDoctor.username = username;
+            existingDoctor.fullname = fullname;
+            existingDoctor.phonenumber = phonenumber;
+            existingDoctor.gender = gender;
+            existingDoctor.dob = dob;
             existingDoctor.specialization = specialization;
             existingDoctor.qualification = qualification;
             existingDoctor.experience = experience;
             existingDoctor.fees = fees;
             existingDoctor.availableSlots = availableSlots;
+            existingDoctor.description = description;
+
+            if (password) {
+                existingDoctor.password = await bcrypt.hash(password, 10);
+            }
 
             await existingDoctor.save();
             return res.status(200).json({ message: "Doctor updated successfully", doctor: existingDoctor });
         }
 
-        // Create a new doctor if they do not exist
+        // Create a new doctor
+        const hashedPassword = await bcrypt.hash(password, 10);
         const doctor = new User({
-            username: name,
+            username,
+            fullname,
+            phonenumber,
+            password: hashedPassword,
+            gender,
+            dob,
             email,
-            role: 'doctor',
+            role: "doctor",
             specialization,
             qualification,
             experience,
             fees,
             availableSlots,
-            phonenumber: "N/A"
+            description,
         });
 
         await doctor.save();
-
         res.status(201).json({ message: "Doctor added successfully", doctor });
     } catch (error) {
         console.error("Error adding doctor:", error);
