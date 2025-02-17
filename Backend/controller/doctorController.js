@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 // 1. Add Doctor (Only Admin)
 
 exports.addDoctor = async (req, res) => {
-    const { username, email, fullname, password, phonenumber, gender, dob, specialization, qualification, experience, fees, availableSlots, description } = req.body;
+    const { username, email, fullname, password, phonenumber, gender, dob, specialization, qualification, experience, fees, availableSlots, description,image } = req.body;
 
     try {
         // Ensure only admins can add doctors
@@ -35,6 +35,7 @@ exports.addDoctor = async (req, res) => {
             existingDoctor.fees = fees;
             existingDoctor.availableSlots = availableSlots;
             existingDoctor.description = description;
+            existingDoctor.image = image;
 
             if (password) {
                 existingDoctor.password = await bcrypt.hash(password, 10);
@@ -61,6 +62,7 @@ exports.addDoctor = async (req, res) => {
             fees,
             availableSlots,
             description,
+            image,
         });
 
         await doctor.save();
@@ -70,6 +72,42 @@ exports.addDoctor = async (req, res) => {
         res.status(500).json({ message: "Server Error: Unable to add doctor", error: error.message });
     }
 };
+
+
+exports.uploadImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "Please upload a file" });
+        }
+
+        // Check file size limit
+        const maxSize = process.env.MAX_FILE_UPLOAD || 2 * 1024 * 1024; // Default 2MB
+        if (req.file.size > maxSize) {
+            return res.status(400).json({
+                message: `Please upload an image less than ${maxSize / (1024 * 1024)}MB`,
+            });
+        }
+
+        // Update user's image in the database
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        user.image = req.file.filename;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Image uploaded successfully",
+            data: req.file.filename,
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
 
 
 

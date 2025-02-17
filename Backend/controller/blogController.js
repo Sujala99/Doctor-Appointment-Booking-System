@@ -3,18 +3,22 @@ const Blog = require("../models/Blog");
 
 // Add a new blog (Only Admin)
 exports.addBlog = async (req, res) => {
-    const { title, content } = req.body;
+    const { title, content,createdAt, author } = req.body;
+    const image = req.file ? req.file.filename : ''; // Get the image filename from the uploaded file
+
 
     try {
         if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Access Denied: Only admins can add blogs." });
         }
 
+
         const blog = new Blog({
             title,
             content,
             image,
-            author: req.user.username,
+            createdAt,
+            author,
         });
 
         await blog.save();

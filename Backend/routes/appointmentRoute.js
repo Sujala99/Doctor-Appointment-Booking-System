@@ -7,6 +7,9 @@ const router = express.Router();
 // User books an appointment
 router.post("/book", authenticateToken, appointmentController.bookAppointment);
 
+
+router.get("/getappointment/:id", appointmentController.appointmentById);
+
 // Doctor views their appointments
 router.get("/doctor", authenticateToken, appointmentController.getAppointmentsForDoctor);
 
@@ -14,6 +17,6 @@ router.get("/doctor", authenticateToken, appointmentController.getAppointmentsFo
 router.put("/status", authenticateToken, appointmentController.updateAppointmentStatus);
 
 // User views their appointments
-router.get("/user", authenticateToken, appointmentController.getAppointmentsForUser);
+router.get("/getappointment/user/:id", authenticateToken, appointmentController.getAppointmentsForUser);
 
 module.exports = router;

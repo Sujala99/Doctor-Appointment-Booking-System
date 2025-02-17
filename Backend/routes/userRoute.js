@@ -18,5 +18,6 @@ router.delete("/deleteuser/:id", authenticateToken, userController.deleteUser);
 router.post('/uploadImage', authenticateToken, upload.single('profilePicture'), userController.uploadImage);
 
 
-// router.post("/reset-password/:token", userController.resetPassword);
+router.post("/reset-password/:token", userController.resetPassword);
+
 module.exports = router;
