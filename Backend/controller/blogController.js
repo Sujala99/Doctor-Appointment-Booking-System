@@ -3,8 +3,7 @@ const Blog = require("../models/Blog");
 
 // Add a new blog (Only Admin)
 exports.addBlog = async (req, res) => {
-    const { title, content,createdAt, author } = req.body;
-    const image = req.file ? req.file.filename : ''; // Get the image filename from the uploaded file
+    const { title, content,createdAt, author, image} = req.body;
 
 
     try {

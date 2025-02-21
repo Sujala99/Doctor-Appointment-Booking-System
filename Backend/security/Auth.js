@@ -1,36 +1,51 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
 const SECRET_KEY = "8261ba19898d0dcdfe6c0c411df74b587b2f54538f5f451633b71e39f957cf01";
 
-function authenticateToken(req, res, next) {
+export const authenticateToken = (req, res, next) => {
+    // Get token from the Authorization header
     const authHeader = req.header("Authorization");
-    const token = authHeader && authHeader.split(" ")[1];
 
-    console.log("Authorization Header:", authHeader); // Debug log
-    console.log("Extracted Token:", token); // Debug log
+    // Check if token exists and is in correct "Bearer <token>" format
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ message: "Access denied: No token provided or token format is invalid." });
+    }
+
+    // Extract the token
+    const token = authHeader.split(" ")[1];
+
+    console.log("Authorization Header:", authHeader);
+    console.log("Extracted Token:", token);
 
     if (!token) {
         return res.status(401).json({ message: "Access denied: No token provided." });
     }
 
     try {
-        const verifiedUser = jwt.verify(token, SECRET_KEY); // Verify the token
-        console.log("Verified User:", verifiedUser); // Debug log
-        req.user = verifiedUser; // Attach verified user data to request
+        // Verify the token using SECRET_KEY
+        const verifiedUser = jwt.verify(token, SECRET_KEY);
+        console.log("Verified User:", verifiedUser);
+
+        // Attach the verified user to the request object
+        req.user = verifiedUser;
+        console.log("req.user set to:", req.user); // Log to verify if req.user is correctly set
+
+        // Continue to the next middleware/route handler
         next();
     } catch (error) {
-        console.error("Token verification error:", error.message); // Debug log
-        res.status(403).json({ message: "Invalid token" });
+        console.error("Token verification error:", error.message);
+        return res.status(403).json({ message: "Invalid token or token expired." });
     }
-}
+};
 
-function authorizeRole(roles) {
+
+// Role-based authorization middleware
+export const authorizeRole = (roles) => {
     return (req, res, next) => {
+        // Ensure the user has a valid role before proceeding
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({ message: "Access Denied: Insufficient Permissions" });
         }
         next();
     };
-}
-
-module.exports = { authenticateToken, authorizeRole };
+};

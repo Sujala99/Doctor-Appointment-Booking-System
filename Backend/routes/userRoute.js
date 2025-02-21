@@ -20,4 +20,8 @@ router.post('/uploadImage', authenticateToken, upload.single('profilePicture'), 
 
 router.post("/reset-password/:token", userController.resetPassword);
 
+
+router.get("/", authenticateToken, userController.getUsersForSidebar);
+
+
 module.exports = router;
