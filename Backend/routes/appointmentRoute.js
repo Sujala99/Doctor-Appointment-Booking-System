@@ -19,4 +19,7 @@ router.put("/status", authenticateToken, appointmentController.updateAppointment
 // User views their appointments
 router.get("/getappointment/user/:id", authenticateToken, appointmentController.getAppointmentsForUser);
 
+
+router.get("/user/getallappointment", authenticateToken, appointmentController.getAllUserAppointments);
+
 module.exports = router;

@@ -37,6 +37,28 @@ exports.updateAppointmentStatus = async (req, res) => {
 
 // Book an appointment (User)
 
+// exports.bookAppointment = async (req, res) => {
+//     const { doctorId, date, time } = req.body;
+
+//     try {
+//         const appointment = new Appointment({
+//             userId: req.user.id, // User making the request
+//             doctorId,
+//             date,
+//             time,
+//         });
+
+//         await appointment.save();
+
+//         // Notify the doctor about the new appointment
+//         await notifyDoctorOnAppointment(doctorId, req.user.id, appointment._id);
+
+//         res.status(201).json({ message: "Appointment booked successfully", appointment });
+//     } catch (error) {
+//         console.error("Error booking appointment:", error);
+//         res.status(500).json({ message: "Server error: Unable to book appointment", error });
+//     }
+// };
 exports.bookAppointment = async (req, res) => {
     const { doctorId, date, time } = req.body;
 
@@ -44,8 +66,8 @@ exports.bookAppointment = async (req, res) => {
         const appointment = new Appointment({
             userId: req.user.id, // User making the request
             doctorId,
-            date,
-            time,
+            date,  // Date should be in the correct format (YYYY-MM-DD)
+            time,  // Time as a string ("HH:mm")
         });
 
         await appointment.save();
@@ -59,6 +81,8 @@ exports.bookAppointment = async (req, res) => {
         res.status(500).json({ message: "Server error: Unable to book appointment", error });
     }
 };
+
+
 
 // Get all appointments for a doctor (Doctor)
 exports.getAppointmentsForDoctor = async (req, res) => {
@@ -146,3 +170,19 @@ exports.appointmentById = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+exports.getAllUserAppointments = async (req, res) => {
+    try {
+        const userId = req.user.id; // Assuming user ID is available in req.user from authentication
+        
+        const appointments = await Appointment.find({ userId })
+            .populate({ path: "doctorId", select: "fullname" }) // Populating doctorId with name field only
+            .sort({ createdAt: -1 }); // Sorting by newest first
+
+        res.status(200).json({ success: true, appointments });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    }
+};
+

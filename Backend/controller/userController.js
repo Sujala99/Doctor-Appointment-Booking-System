@@ -310,6 +310,84 @@ exports.getUsersForSidebar = async (req, res) => {
 
 
 
+exports.addUser = async (req, res) => {
+    try {
+        // Check if the user making the request is an admin
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied. Only admins can add users." });
+        }
+
+        const { username, phonenumber, email, password, fullname, dob, gender, address, image, role } = req.body;
+
+        // Validate required fields
+        if (!username || !phonenumber || !email || !password || !fullname) {
+            return res.status(400).json({ message: "All required fields must be provided." });
+        }
+
+        // Check for existing user
+        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+        if (existingUser) {
+            return res.status(400).json({ message: "Username or Email already exists." });
+        }
+
+        // Create new user
+        const newUser = new User({
+            username,
+            phonenumber,
+            email,
+            password, // You should hash the password before saving
+            fullname,
+            dob,
+            gender,
+            address,
+            image,
+            role
+        });
+
+        await newUser.save();
+        res.status(201).json({ message: "User added successfully", user: newUser });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+
+
+exports.getProfile = async (req, res) => {// Controller function to get the user's profile
+    try {
+        // Use the 'id' from the token payload instead of '_id'
+        const userId = req.user.id; // Changed from req.user._id to req.user.id
+
+        // Find the user by their ID
+        const user = await User.findById(userId).select("-password"); // Exclude password from the profile
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Return the user's profile details
+        return res.status(200).json({
+            username: user.username,
+            phonenumber: user.phonenumber,
+            email: user.email,
+            fullname: user.fullname,
+            dob: user.dob,
+            gender: user.gender,
+            address: user.address,
+            image: user.image,
+            role: user.role,
+            description: user.description,
+            specialization: user.specialization,
+            qualification: user.qualification,
+            experience: user.experience,
+            fees: user.fees,
+            availableSlots: user.availableSlots
+        });
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        return res.status(500).json({ message: "Server error while fetching profile." });
+    }
+};
 
 
 
