@@ -21,11 +21,14 @@ router.post('/uploadImage', authenticateToken, upload.single('profilePicture'), 
 router.post("/reset-password/:token", userController.resetPassword);
 
 
-router.get("/", authenticateToken, userController.getUsersForSidebar);
+router.get("/chatuser", authenticateToken, userController.getUsersForSidebar);
 
 router.post("/addUser", authenticateToken,userController.addUser);
 
 router.get("/profile", authenticateToken, userController.getProfile); 
+
+
+router.put("/updateProfile",authenticateToken, userController.updateProfile);
 
 
 // router.get("/getallusers", authenticateToken, userController.getAllUser); 

@@ -391,6 +391,71 @@ exports.getProfile = async (req, res) => {// Controller function to get the user
 
 
 
+exports.updateProfile = async (req, res) => {
+    try {
+        // Use the 'id' from the token payload instead of '_id'
+        const userId = req.user.id; // Assuming the user ID is in the token payload
+
+        // Find the user by their ID
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Handle password update: check if the new password is provided
+        let updatedUserData = {
+            username: req.body.username || user.username,
+            phonenumber: req.body.phonenumber || user.phonenumber,
+            email: req.body.email || user.email,
+            fullname: req.body.fullname || user.fullname,
+            dob: req.body.dob || user.dob,
+            gender: req.body.gender || user.gender,
+            address: req.body.address || user.address,
+            image: req.body.image || user.image, // Make sure the image is correctly updated
+            role: req.body.role || user.role,
+            description: req.body.description || user.description,
+            specialization: req.body.specialization || user.specialization,
+            qualification: req.body.qualification || user.qualification,
+            experience: req.body.experience || user.experience,
+            fees: req.body.fees || user.fees,
+            availableSlots: req.body.availableSlots || user.availableSlots
+        };
+
+        // If a new password is provided, hash it before updating
+        if (req.body.password) {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(req.body.password, salt);
+            updatedUserData.password = hashedPassword;
+        }
+
+        // Update the user's profile
+        const updatedUser = await User.findByIdAndUpdate(userId, updatedUserData, { new: true }).select("-password");
+
+        // Return the updated profile
+        return res.status(200).json({
+            username: updatedUser.username,
+            phonenumber: updatedUser.phonenumber,
+            email: updatedUser.email,
+            fullname: updatedUser.fullname,
+            dob: updatedUser.dob,
+            gender: updatedUser.gender,
+            address: updatedUser.address,
+            image: updatedUser.image,
+            role: updatedUser.role,
+            description: updatedUser.description,
+            specialization: updatedUser.specialization,
+            qualification: updatedUser.qualification,
+            experience: updatedUser.experience,
+            fees: updatedUser.fees,
+            availableSlots: updatedUser.availableSlots
+        });
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        return res.status(500).json({ message: "Server error while updating profile." });
+    }
+};
+
 
 
 
