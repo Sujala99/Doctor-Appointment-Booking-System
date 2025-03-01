@@ -15,7 +15,7 @@ exports.registerUser = async (req, res) => {
         console.log("Received Data:", req.body); // Debugging: Check if all fields are received
 
         // Ensure all required fields are provided
-        if (!username || !phonenumber || !email || !fullname || !password) {
+        if (!username  || !email || !fullname || !password) {
             return res.status(400).json({ message: "All required fields must be provided" });
         }
 

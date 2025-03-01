@@ -210,3 +210,14 @@ exports.deleteDoctorById = async (req, res) => {
         res.status(500).json({ message: "Server Error: Unable to delete doctor", error: error.message });
     }
 };
+
+
+exports.getrandom = async (req, res) => {
+    const count = parseInt(req.query.count) || 4;
+    try {
+        const doctors = await DoctorModel.aggregate([{ $sample: { size: count } }]);
+        res.json({ doctors });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch doctors", error });
+    }
+};

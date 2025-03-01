@@ -15,4 +15,5 @@ router.delete("/deleteDoctor/:id", authenticateToken, doctorController.deleteDoc
 
 router.post('/uploadImage', authenticateToken, upload.single('profilePicture'), doctorController.uploadImage);
 
+router.get("/getRandomDoctors", doctorController.getrandom);
 module.exports = router;

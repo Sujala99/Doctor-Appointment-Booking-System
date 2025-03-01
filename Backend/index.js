@@ -23,6 +23,7 @@ app.use(cors({
     credentials: true
 }));
 
+
 app.use(express.json());
 app.use("/uploads", express.static("public/uploads"));
 
@@ -49,3 +50,4 @@ const port = 4000;
 server.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
+module.exports = app;  // Add this line so tests can use the app
