@@ -212,12 +212,17 @@ exports.deleteDoctorById = async (req, res) => {
 };
 
 
-exports.getrandom = async (req, res) => {
-    const count = parseInt(req.query.count) || 4;
+
+// Get 4 Random Doctors
+exports.getRandomDoctors = async (req, res) => {
     try {
-        const doctors = await DoctorModel.aggregate([{ $sample: { size: count } }]);
-        res.json({ doctors });
+        const doctors = await User.aggregate([
+            { $match: { role: "doctor" } }, // Filter only doctors
+            { $sample: { size: 4 } } // Get 4 random documents
+        ]);
+
+        return res.status(200).json({ doctors });
     } catch (error) {
-        res.status(500).json({ message: "Failed to fetch doctors", error });
+        return res.status(500).json({ message: "Error fetching random doctors", error: error.message });
     }
 };
