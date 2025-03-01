@@ -460,28 +460,3 @@ exports.updateProfile = async (req, res) => {
 
 
 
-
-exports.permonths = async (req, res) => {
-    const result = await User.aggregate([
-        {
-            $group: {
-                _id: { $month: "$createdAt" },
-                count: { $sum: 1 }
-            }
-        },
-        { $sort: { _id: 1 } }
-    ]);
-    res.json(result);
-}
-
-exports.gender =async (req, res) => {
-    const result = await User.aggregate([
-        {
-            $group: {
-                _id: "$gender",
-                count: { $sum: 1 }
-            }
-        }
-    ]);
-    res.json(result);
-}

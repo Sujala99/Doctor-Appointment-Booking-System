@@ -34,6 +34,7 @@ const blogRoutes = require("./routes/blogRoute");
 const appointmentRoutes = require("./routes/appointmentRoute");
 const notificationRoutes = require("./routes/notificationRoute");
 const messageRoute = require("./routes/messageRoute"); // Add chat routes
+const dashboardRoutes = require("./routes/dashboardRoutes"); // Add chat routes
 
 app.use("/users", userRoutes);
 app.use("/doctors", doctorRoutes);
@@ -41,6 +42,7 @@ app.use("/blogs", blogRoutes);
 app.use("/appointments", appointmentRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/message", messageRoute); // Add chat API routes
+app.use("/dashboard", messageRoute); // Add chat API routes
 
 // Initialize Socket.io
 socketHandler(server);

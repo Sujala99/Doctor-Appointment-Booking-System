@@ -31,8 +31,6 @@ router.get("/profile", authenticateToken, userController.getProfile);
 router.put("/updateProfile",authenticateToken, userController.updateProfile);
 
 
-router.put("/users-per-month",authenticateToken, userController.permonths);
-router.put("/gender-distribution'",authenticateToken, userController.gender);
 
 
 // router.get("/getallusers", authenticateToken, userController.getAllUser); 
