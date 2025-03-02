@@ -42,7 +42,7 @@ app.use("/blogs", blogRoutes);
 app.use("/appointments", appointmentRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/message", messageRoute); // Add chat API routes
-app.use("/dashboard", messageRoute); // Add chat API routes
+app.use("/dashboard", dashboardRoutes); // Add chat API routes
 
 // Initialize Socket.io
 socketHandler(server);

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const blogController = require("../controller/dashboardController"); // Ensure the path is correct
+const dashboardController = require("../controller/dashboardController"); // Ensure the path is correct
 const { authenticateToken } = require("../security/Auth");
 
 // Admin Middleware - to ensure only admin can access
@@ -13,7 +13,8 @@ const { authenticateToken } = require("../security/Auth");
 // };
 
 // Add admin check to routes
-router.get("/users-per-month", authenticateToken, blogController.getUsersPerMonth);
-router.get("/gender-distribution", authenticateToken, blogController.getGenderDistribution);
+// router.get("/users-per-month", authenticateToken, blogController.getUsersPerMonth);
+// router.get("/gender-distribution", authenticateToken, blogController.getGenderDistribution);
+router.get("/dashboard/stats", dashboardController.getDashboardStats);
 
 module.exports = router;
